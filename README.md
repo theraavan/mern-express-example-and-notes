@@ -2,7 +2,7 @@
 
 <h2 align="center">
 
-[![SOLID Architecture](#)](https://github.com/vikas-appdev)
+<img src="https://raw.githubusercontent.com/theraavan/mern-express-example-and-notes/master/redmeresources/github.svg" alt="Author Github Profile" style="width:100px;"/>
 
 </h2>
 
@@ -12,7 +12,7 @@ npm init --yes
 npm i dotenv
 npm i express
 
-```js
+```javascript
 const express = require('express');
 const dotEnv = require('dotenv');
 
