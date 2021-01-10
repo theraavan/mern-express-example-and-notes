@@ -8,9 +8,12 @@
 
 
 
-npm init --yes
-npm i dotenv
-npm i express
+`npm init --yes`
+
+`npm i dotenv`
+
+`npm i express`
+
 
 ```javascript
 const express = require('express');
