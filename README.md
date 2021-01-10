@@ -8,12 +8,11 @@
 
 
 
-`npm init --yes`
+	npm init --yes
 
-`npm i dotenv`
+	npm i dotenv
 
-`npm i express`
-
+	npm i express
 
 ```javascript
 const express = require('express');
@@ -51,13 +50,9 @@ app.listen(PORT, ()=>{
  
 ##Express Middleware
 ------------------
-Express is a routing and middleware web framework that has minimal functionality of 
-its own: An Express application is essentially a series of middleware function calls.
+> Express is a routing and middleware web framework that has minimal functionality of its own: An Express application is essentially a series of middleware function calls.
 
-Middleware functions are functions that have access to the request object (req),
-the response object (res), and the next middleware function in the application’s 
-request-response cycle. The next middleware function is commonly denoted by a 
-variable named next.
+> Middleware functions are functions that have access to the request object (req), the response object (res), and the next middleware function in the application’s request-response cycle. The next middleware function is commonly denoted by a variable named next.
 
 Middleware functions can perform the following tasks:
  - Execute any code.
@@ -76,7 +71,7 @@ An Express application can use the following types of middleware:
  - Built-in middleware
  - Third-party middleware
 
-####Create a Middleware
+#### Create a Middleware
 -------------------
 ```javascript
 const appMiddleware = (req, res, next) =>{
