@@ -188,11 +188,8 @@ const productSchema = new mongoose.Schema({
 module.exports = mongoose.model('Product', productSchema)
 ```
 
-```{
-    timestamps= true
-}```
 
-> By supplying additional parameters we can save some additional work like maintaining creation time and last updated at value manually updation.
+> By supplying additional parameters `{ timestamps= true }` we can save some additional work like maintaining creation time and last updated at value manually updation.
 
 
 #### Optional tools
