@@ -2,7 +2,7 @@
 
 <h2 align="center">
 
-<img src="https://raw.githubusercontent.com/theraavan/mern-express-example-and-notes/master/redmeresources/github.svg" alt="Author Github Profile" style="width:100px;"/>
+[![SOLID Architecture](#)](https://github.com/vikas-appdev)
 
 </h2>
 
@@ -31,18 +31,23 @@ app.listen(PORT, ()=>{
 });
 ```
 
-npm install -D nodemon
+#### Add auto reload on changes
 
+`npm install -D nodemon`
+
+```javascript
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
   
- npm run dev
+```
+  
+`npm run dev`
  
  
- Express Middleware
- ------------------
+##Express Middleware
+------------------
 Express is a routing and middleware web framework that has minimal functionality of 
 its own: An Express application is essentially a series of middleware function calls.
 
@@ -68,49 +73,54 @@ An Express application can use the following types of middleware:
  - Built-in middleware
  - Third-party middleware
 
-Create a Middleware
+####Create a Middleware
 -------------------
+```javascript
 const appMiddleware = (req, res, next) =>{
     console.log('Hello I am a middleware');
     next();
 }
+```
 
-Question create a middleware to print : request timestamp, method, path, status
+####Question create a middleware to print : request timestamp, method, path, status
 
-Mount it on application
+####Mount it on application
 ------------------------
 1. Method one - Using use method of app
-app.use(appMiddleware)
+`app.use(appMiddleware)`
 2. Method two - Directly on route
+```javascript
 app.get('/', appMiddleware, (req, res, next)=>{
     res.send('Hello From Node Server');
-})
+})```
 3. Method three - Using path params
-app.use('/', appMiddleware);
+`app.use('/', appMiddleware);`
 
 or above function can be directly written as 
+```javascript
 app.use('/', function (req, res, next) {
   console.log(// Message)
   next()
 })
+```
 
 
-Built in Middleware
+####Built in Middleware
 ------------------
 - express.json : Before 4.16.0 version of express this built in middleware was not present 
 in express
 
-app.use(express.json())
+`app.use(express.json())`
 
 - express.urlencode : Before 4.16.0 version of express this built in middleware was not present 
 in express
 
-app.use(express.urlencoded({extended: true})) // Form url-encoded data
+`app.use(express.urlencoded({extended: true})) // Form url-encoded data`
 
 Third party middleware
 ------------------------
-cookie-parser
-cors
+ - cookie-parser
+ - cors
 
 What is cors?
 
