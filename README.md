@@ -2,7 +2,7 @@
 
 <h2 align="center">
 
-[![SOLID Architecture](https://awesome.re/mentioned-badge.svg)](https://github.com/vikas-appdev)
+[![SOLID Architecture](#)](https://github.com/vikas-appdev)
 
 </h2>
 
@@ -11,11 +11,17 @@
 npm init --yes
 npm i dotenv
 npm i express
+
+```js
 const express = require('express');
 const dotEnv = require('dotenv');
+
 dotEnv.config()
+
 const app = express();
+
 const PORT = process.env.PORT || 3000;
+
 app.get('/', (req, res, next)=>{
     res.send('Hello From Node Server');
 })
@@ -23,6 +29,7 @@ app.get('/', (req, res, next)=>{
 app.listen(PORT, ()=>{
     console.log(`Server listening on port ${PORT}`);
 });
+```
 
 npm install -D nodemon
 
