@@ -1,9 +1,9 @@
 <h1 align="center">REST API development using express and MongoDb</h1>
 
 <h2 align="center">
-
-[![SOLID Architecture](#)](https://github.com/vikas-appdev)
-
+<a href="https://github.com/vikas-appdev" rel="Author">
+<img src="https://raw.githubusercontent.com/theraavan/mern-express-example-and-notes/master/redmeresources/github.svg" width="100" height="100">
+</a>
 </h2>
 
 
@@ -441,7 +441,6 @@ package.json
 
 
 ### Mongoose "toObject" transform
-==================================
 
 - open model and add following below timestamps
 
@@ -709,7 +708,7 @@ module.exports.getProductById = async ({ id }) =>{
 }
 ```
 
-- *Add product not found case inside service in case of wrong id *
+- Add product not found case inside service in case of wrong id
 
 - define a constant for product not found message 
 
