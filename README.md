@@ -45,10 +45,10 @@ app.listen(PORT, ()=>{
   
 ```
   
-`npm run dev`
+`npm run dev
  
  
-##Express Middleware
+### Express Middleware
 ------------------
 > Express is a routing and middleware web framework that has minimal functionality of its own: An Express application is essentially a series of middleware function calls.
 
@@ -80,9 +80,9 @@ const appMiddleware = (req, res, next) =>{
 }
 ```
 
-####Question create a middleware to print : request timestamp, method, path, status
+> Question create a middleware to print : request timestamp, method, path, status
 
-####Mount it on application
+#### Mount it on application
 ------------------------
 1. Method one - Using use method of app
 `app.use(appMiddleware)`
@@ -91,10 +91,12 @@ const appMiddleware = (req, res, next) =>{
 app.get('/', appMiddleware, (req, res, next)=>{
     res.send('Hello From Node Server');
 })```
+
 3. Method three - Using path params
 `app.use('/', appMiddleware);`
 
 or above function can be directly written as 
+
 ```javascript
 app.use('/', function (req, res, next) {
   console.log(// Message)
@@ -103,42 +105,42 @@ app.use('/', function (req, res, next) {
 ```
 
 
-####Built in Middleware
+#### Built in Middleware
 ------------------
 - express.json : Before 4.16.0 version of express this built in middleware was not present 
 in express
 
-`app.use(express.json())`
+	`app.use(express.json())`
 
 - express.urlencode : Before 4.16.0 version of express this built in middleware was not present 
 in express
 
-`app.use(express.urlencoded({extended: true})) // Form url-encoded data`
+	`app.use(express.urlencoded({extended: true})) // Form url-encoded data`
 
-Third party middleware
+### Third party middleware
 ------------------------
  - cookie-parser
  - cors
 
-What is cors?
+> What is cors?
 
-Mongodb connectivity using mongoose
+## MongoDb connectivity using mongoose
 ---------------------
 
-** Install Mongodb
-** SET ENVIRONMENT VARIABLE
-** Create c://data/db
-** run mongod on cmd
-** open compass and connect with default values
+* Install Mongodb
+* SET ENVIRONMENT VARIABLE
+* Create c://data/db
+* run mongod on cmd
+* open compass and connect with default values
 
-Mongoose is ODM librabry.
+> Mongoose is ODM librabry.
 
-- npm install mongoose
+	`npm install mongoose`
 
-create a file called database/connection.js and add following code
+create a file called `database/connection.js` and add following code
 
+```javascript
 const mongoose = require('mongoose');
-
 
 module.exports = async () =>{
     try{
@@ -152,26 +154,28 @@ module.exports = async () =>{
         throw new Error(err);
     }
 }
+```
 	
-Add db url inside env file : DB_URL = "mongodb://localhost/apidb"
+Add db url inside `.env` file 
+> DB_URL = "mongodb://localhost/apidb"
 
 Call above connection where you need for eg: index.js
 
+```javascript
 const dbConnection = require('./database/connection');
 
 dbConnection();
+```
 
-
-Schema Modeling
+#### Schema Modeling
 -----------------
-Create a folder called model inside database folder, 
-inside that folder create all model files
+Create a folder called model inside database folder, inside that folder create all model files
 
-ProductModel.js
+#### ProductModel.js
 --------------------------
 
+```
 const mongoose = require('mongoose');
-
 
 const productSchema = new mongoose.Schema({
     name: String,
@@ -182,83 +186,77 @@ const productSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model('Product', productSchema)
+```
 
-----------------------------------------------------------------
-{
+```{
     timestamps= true
-}
-By supplying additional parameters we can save some additional work like maintaining 
-creation time and last updated at value manually updation.
----------------------------------------------------------------
+}```
+
+> By supplying additional parameters we can save some additional work like maintaining creation time and last updated at value manually updation.
 
 
+#### Optional tools
 
-Optional tools
------------------
 - Postman
 - robomongo => robo3t(GUI TOOL FOR MONGODB)
 
 
-API VERSIONING, POST API AND ROUTER MIDDLEWARE
+### API VERSIONING, POST API AND ROUTER MIDDLEWARE
 -----------------------------------------------
 
-create a new route using app.use method inside index.js
--------------------------------------------------------
+- Create a new route using app.use method inside index.js
 
+
+```javascript
 app.use('/api/v1/product');
+```
 
-- create a folder called routes and add all routes inside that folder
+- Create a folder called routes and add all routes inside that folder
 
+```javascript
 router.post('/', (req, res) =>{
     res.send('Product created successfully');
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
+```
 
 - Refactor the above code to follow the architecture 
 
 - create a folder called controller
-- Add productcontroller.js inside that folder and add following code
 
+- Add productcontroller.js inside that folder and add following code
+```javascript
 module.exports.createProduct = (req, res) =>{
     console.log('Request Body: ', req.body);
     res.send('Product created ');
 }
+```
 
-Inside productRoute replace the post call with following code 
-
+- Inside productRoute replace the post call with following code 
+```javascript
 router.post('/', productController.createProduct);
+```
 
-To follow the service pattern create a folder called service and inside 
-that create a file called productService.js and add following code
----------------------------------------------------------------------------------------------------------------------
-
+- To follow the service pattern create a folder called service and inside that create a file called productService.js and add following code
+```javascript
 module.exports.createProduct = (serviceData) =>{
     console.log(serviceData);
 }
+```
 
-Make use of service inside controller
------------------------------------------
-Replace product controller with following code 
+- Make use of service inside controller
 
+- Replace product controller with following code 
+
+```javascript
 const productService = require('../service/productService');
 module.exports.createProduct = (req, res) =>{
     productService.createProduct(req.body);
 }
+```
 
-Save data using service and reuse it
---------------------------------------
+- Save data using service and reuse it
+
+```javascript
 const Product = require('../database/models/productModel');
 
 module.exports.createProduct = async (serviceDate) =>{
@@ -269,13 +267,14 @@ module.exports.createProduct = async (serviceDate) =>{
         throw new Error(err);
     }
 }
+```
 
 
-Refactor code once again by extracting constant and handling error properly 
-inside controller, final code should look like following 
+Refactor code once again by extracting constant and handling error properly inside controller, final code should look like following 
 
 index.js
---------
+-------
+```javascript
 const express = require('express');
 const dotEnv = require('dotenv');
 const dbConnection = require('./database/connection');
@@ -290,9 +289,7 @@ dbConnection();
 // Built-In middleware
 app.use(express.json());
 
-
 app.use('/api/v1/product', require('./routes/productRoutes'));
-
 
 app.listen(PORT, ()=>{
     console.log(`Server listening on port ${PORT}`);
@@ -307,12 +304,13 @@ app.use(function(err, req, res, next){
         body:{}
     })
 })
-
+```
 
 database => connection.js
+-----
 
+```javascript
 const mongoose = require('mongoose');
-
 
 module.exports = async () =>{
     try{
@@ -323,12 +321,12 @@ module.exports = async () =>{
         throw new Error(err);
     }
 }
-
+```
 
 database => models => productModel.js
-
+----
+```javascript
 const mongoose = require('mongoose');
-
 
 const productSchema = new mongoose.Schema({
     name: String,
@@ -339,28 +337,27 @@ const productSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model('Product', productSchema)
-
+```
 
 routes => productRoutes.js
+----
 
+```javascript
 const express = require('express');
 const router = express.Router();
 const productController = require('../controller/productController');
 
-
 //router.post('/', productController.createProduct);
 router.post('/test', productController.createProduct);
 
-
 module.exports = router;
-
+```
 
 controller => productController.js
-
+----
+```javascript
 const productService = require('../service/productService');
 const constants = require('../constants');
-
-
 
 module.exports.createProduct = async (req, res) =>{
     let response = {};
@@ -378,10 +375,11 @@ module.exports.createProduct = async (req, res) =>{
     }
     return res.status(response.status).send(response);
 }
-
+```
 
 service => productService.js
-
+----
+```javascript
 const Product = require('../database/models/productModel');
 
 module.exports.createProduct = async (serviceDate) =>{
@@ -392,12 +390,11 @@ module.exports.createProduct = async (serviceDate) =>{
         throw new Error(err);
     }
 }
-
-
-
+```
 
 constants => index.js
-
+----
+```javascript
 module.exports = {
     defaultServerResponse:{
         status : 400,
@@ -408,15 +405,19 @@ module.exports = {
         PRODUCT_CREATED : 'Product created successfully'
     }
 }
+```
 
 
 .env 
-
+----
+```
 PORT = 3002
 DB_URL = "mongodb://localhost/testdb"
+```
 
 package.json
-
+----
+```json
 {
   "name": "express-starter",
   "version": "1.0.0",
@@ -438,13 +439,16 @@ package.json
     "nodemon": "^2.0.6"
   }
 }
+```
 
 
 
-Mongoose "toObject" transform
+### Mongoose "toObject" transform
+==================================
 
-open model and add following below timestamps
+- open model and add following below timestamps
 
+```javascript
 timestamps: true,
 toObject : {
 	transform: function(doc, ret, options){
@@ -454,22 +458,22 @@ toObject : {
 		return ret;
 	}
 }
+```
 
-inside service store the returning result into a variable and transform the result
-before returning data.
++ Inside service store the returning result into a variable and transform the result before returning data.
 
+```javascript
 let result =  await product.save();
 return result.toObject();
+```
 
 
-Create product API scheme
+#### Create product API scheme
 
-=> npm i joi (A library to validate schema)
+> npm i joi (A library to validate schema)
 
-create a folder apiSchema inside that create a file called productSchema.js 
-and add following code
-
-
+- create a folder `apiSchema` inside that create a file called `productSchema.js` and add following code
+```javascript
 const Joi = require('joi');
 
 module.exports.createProductSchema = Joi.object().keys({
@@ -477,13 +481,12 @@ module.exports.createProductSchema = Joi.object().keys({
     price : Joi.number().required(),
     brand: Joi.string().required()
 });
+```
 
-API schema validation middleware before sending it to controller to 
-reduce network time
+#### API schema validation middleware before sending it to controller to reduce network time
 
-create a folder called middleware, create a file named joiSchemaValidation.js
-and add the following code 
-
+- create a folder called `middleware`, create a file named `joiSchemaValidation.js` and add the following code 
+```javascript
 const Joi = require('joi');
 
 const validateObjectSchema = (data, schema) => {
@@ -497,18 +500,22 @@ module.exports.validateBody = (schema) => {
         validateObjectSchema(req.body, schema);
     }
 }
+```
 
+- Add middleware inside route as second param.
 
-Add middleware inside route as second param.
+```javascript
 router.post(
 	'/', 
 	joiSchemaValidation.validateBody(productSchema.createProductSchema), 
 	productController.createProduct
 );
+```
 
 
-Extract error message from validate
+- Extract error message from validate
 
+```javascript
 const Joi = require('joi');
 const constants = require('../constants');
 
@@ -531,6 +538,7 @@ const validateObjectSchema = (data, schema) => {
     //console.log('errorDetails', errorDetails);
 }
 
+
 module.exports.validateBody = (schema) => {
     return (req, res, next) => {
         let response = {...constants.defaultServerResponse}
@@ -543,10 +551,11 @@ module.exports.validateBody = (schema) => {
         return next();
     }
 }
+```
 
 
-Const
-
+- Const
+```javascript
 module.exports = {
     defaultServerResponse:{
         status : 400,
@@ -560,31 +569,33 @@ module.exports = {
         BAD_REQUEST : 'Invalid fields'
     }
 }
+```
 
 
 
-Product List API with pagination
-----------------------------------
+### Product List API with pagination
 
-1. open product controller and copy createProduct function and add below by renaming as 
-getAllProduct
+- open product controller and copy createProduct function and add below by renaming as getAllProduct
 
-2. create a constant for product fetched like below 
+- create a constant for product fetched like below 
 
+```
 productMessage : {
 	PRODUCT_CREATED : 'Product created successfully',
 	PRODUCT_FETCHED : 'Product fetched successfully'
 },
+```
 
-3. Make use of above constant inside controller
+- Make use of above constant inside controller
 
-4. Add newly created controller inside route
+- Add newly created controller inside route
 
-	router.get('/', productController.getAllProducts);
+```javascript
+router.get('/', productController.getAllProducts);
+```
 	
-5. Create a service inside service to get all products using find function of mongoose
-	on product schema.
-	
+- Create a service inside service to get all products using find function of mongoose on product schema.
+```javascript
 	module.exports.getAllProducts = async (serviceDate) =>{
 		try{
 			let products = await Product.find({});
@@ -594,22 +605,20 @@ productMessage : {
 			throw new Error(err);
 		}
 	}
+```
 	
-6. Refactor every layer to make use of getAllProduct 
+- Refactor every layer to make use of getAllProduct 
 
-7. Test route using http get method by hitting url in browser or inside postman 
-	http://localhost:3002/api/v1/products
+- Test route using http get method by hitting url in browser or inside postman 
+	`http://localhost:3002/api/v1/products`
 	
-Transform fetched result 
---------------------------
-* we can transform result inside for loop and return it but with that we have to write 
-transformation logic every time when we fetched products anywhere else i.e is the reason
-we will create a helper function to reuse this logic.
+#### Transform fetched result 
 
-1. create a folder called helper
-2. create a file dbHelper inside that folder and export a function for format
-the result of mongo data that will take a argument as Array data or single data.
+> we can transform result inside for loop and return it but with that we have to write transformation logic every time when we fetched products anywhere else i.e is the reason we will create a helper function to reuse this logic.
 
+- create a folder called helper
+- create a file dbHelper inside that folder and export a function for format the result of mongo data that will take a argument as Array data or single data.
+```javascript
 module.exports.formatMongoData = (data) => {
     let newDataList = [];
     if(Array.isArray(data)){
@@ -619,57 +628,57 @@ module.exports.formatMongoData = (data) => {
         return newDataList;
     }
     return data.toObject();
-
 }
+```
 
-3. Make use of formatData method inside service to transform the data
+- Make use of formatData method inside service to transform the data
 
-import method inside service as file module
+- import method inside service as file module
 
-const { formatMongoData } = require('../helper/dbHelper');
+```const { formatMongoData } = require('../helper/dbHelper');```
 
-now replace the return statement "return products;" with following code
+- now replace the return statement `return products;` with following code
 
-return formatMongoData(products);
+```return formatMongoData(products);```
 
-Make use of this function inside create product function too.
+- Make use of this function inside create product function too.
 
-return formatMongoData(result);
+```return formatMongoData(result);```
 
 
 Test code wether it is working or not
 
 
 
-Get query params
+#### Get query params
 ------------------------
-open apiSchema => productSchema.js and add following code 
+open `apiSchema => productSchema.js` and add following code 
+```javascript
 module.exports.getAllProductSchema = Joi.object().keys({
     skip: Joi.string(),
     limit: Joi.string()
 })
+```
 
-create a middleware to validate query params
-copy existing validation code and replace req.body with req.parms
+- create a middleware to validate query params
+- copy existing validation code and replace `req.body` with `req.parms`
 
-apply middleware on routes
+- apply middleware on routes
 
-router.get('/', 
-joiSchemaValidation.validateQueryParams(productSchema.getAllProductSchema), 
-productController.getAllProducts);
+```
+router.get('/', joiSchemaValidation.validateQueryParams(productSchema.getAllProductSchema), productController.getAllProducts);
+```
 
-
-test code by passing query string 
-
-
-Make use of query string for pagination
-
-Open product controller and pass req.query inside get all product function as a param
+> test code by passing query string *skip* and *limit*
 
 
-Open service and destructure the value from object params and add skip and limit on find()
+#### Make use of query string for pagination
 
+- Open product controller and pass `req.query` inside get all product function as a param
 
+- Open service and destructure the value from object params and add `skip` and `limit` on `find()`
+
+```javascript
 module.exports.getAllProducts = async ({ skip=0, limit=10 }) =>{
     try{
         let products = await Product.find({}).skip(parseInt(skip)).limit(parseInt(limit));
@@ -679,18 +688,19 @@ module.exports.getAllProducts = async ({ skip=0, limit=10 }) =>{
         throw new Error(err);
     }
 }
+```
 
-Test code by passing skip and limit params 
-http://localhost:3002/api/v1/products?skip=0&limit=1
+- Test code by passing skip and limit params 
+> http://localhost:3002/api/v1/products?skip=0&limit=1
 
 
-GET PRODUCT BY ID
+#### GET PRODUCT BY ID
 --------------------
-create a function inside controller to get product by id
-copy export code and paste by remaming it getProductById and replace the service call 
-with getProductById which will take a params "req.params"
+- create a function inside controller to get product by id
+- copy export code and paste by remaming it getProductById and replace the service call with getProductById which will take a params `req.params`
+- create service getProductById
+```javascript
 
-create service getProductById
 module.exports.getProductById = async ({ id }) =>{
     try{
         let product = await Product.findById(id);
@@ -700,58 +710,71 @@ module.exports.getProductById = async ({ id }) =>{
         throw new Error(err);
     }
 }
+```
 
-Add product not found case inside service in case of wrong id 
---------------------------------------------------
-define a constant for product not found message 
+- *Add product not found case inside service in case of wrong id *
 
-use constant inside service and throw message if product is null
+- define a constant for product not found message 
+
+- use constant inside service and throw message if product is null
+```
 if(!product){
 	throw new Error(constants.productMessage.PRODUCT_NOT_FOUND);
 }
+```
 
-Add route using path parameter inside routes
+- Add route using path parameter inside routes
 
+```
 router.get('/:id', productController.getProductById);
+```
 
-Test implementation using postman by passing a correct and wrong id
+- Test implementation using postman by passing a correct and wrong id
 
 
-Add validation on id
------------------------
+#### Add validation on id
+
 - Import mongoose inside service 
-	const mongoose = require('mongoose');
+	`const mongoose = require('mongoose');`
 - check if given id is valid object id or not
+	```
 	if(!mongoose.Types.ObjectId.isValid(id)){
 		throw new Error(constants.databaseMessage.INVALID_ID);
 	}
+	```
 - Add INVALID_ID constant inside constant file
+	```
 	databaseMessage: {
         INVALID_ID: 'Given id is invalid please check id.'
     }
+	```
 	
-Refactor above cut validation and create a validation helper inside dbHelper
+- Refactor above cut validation and create a validation helper inside dbHelper
+```
 module.exports.checkObjectId = (id) => {
     if(!mongoose.Types.ObjectId.isValid(id)){
         throw new Error(constants.databaseMessage.INVALID_ID);
     }
 
 }
+```
 
-And make use of helper function inside service
+- And make use of helper function inside service
 
 
-Update product By Id :
----------------------------
+#### Update product By Id :
 
-define a validation schema inside apiSchema
+- define a validation schema inside apiSchema
+```javascript
 module.exports.updateProductSchema = Joi.object().keys({
     name : Joi.string(),
     price : Joi.number(),
     brand: Joi.string()
 })
+```
 
-create a updateProduct controller
+- create a updateProduct controller
+```javascript
 module.exports.updateProduct = async (req, res) =>{
     //let response = {};
     let response = {...constants.defaultServerResponse};
@@ -769,12 +792,12 @@ module.exports.updateProduct = async (req, res) =>{
     }
     return res.status(response.status).send(response);
 }
+```
 
-create service for updating data inside mongo
-- There is two method for updating data updateOne and findOneAndUpdate updateOne 
-does not return anything, we want updated data as response so will make use of 
-findOneAndUpdate
+- create service for updating data inside mongo
+- There is two method for updating data updateOne and findOneAndUpdate updateOne does not return anything, we want updated data as response so will make use of findOneAndUpdate
 
+```javascript
 module.exports.updateProduct = async ({ id, updateInfo }) =>{
     try{
         checkObjectId(id);
@@ -792,19 +815,23 @@ module.exports.updateProduct = async ({ id, updateInfo }) =>{
         throw new Error(err);
     }
 }
+```
 
 
-Add route with put mapping by passing validate middleware 
+- Add route with put mapping by passing validate middleware 
 
+```
 router.put('/:id', joiSchemaValidation.validateBody(productSchema.updateProductSchema), productController.updateProduct);
+```
 
 
 
-DELETE PRODUCT BY Id:
+#### DELETE PRODUCT BY Id:
 ---------------------------
 
-create a delete product controller
+- create a delete product controller
 
+```javascript
 module.exports.deleteProduct = async (req, res) =>{
     //let response = {};
     let response = {...constants.defaultServerResponse};
@@ -819,9 +846,10 @@ module.exports.deleteProduct = async (req, res) =>{
     }
     return res.status(response.status).send(response);
 }
+```
 
-Define a service for deleting product 
-
+- Define a service for deleting product 
+```javascript
 module.exports.deleteProduct = async ({ id }) =>{
     try{
         checkObjectId(id);
@@ -835,33 +863,13 @@ module.exports.deleteProduct = async ({ id }) =>{
         throw new Error(err);
     }
 }
+```
 
 
 
-Add delete router 
+- Add delete router 
+```
 router.delete('/:id', productController.deleteProduct);
+```
 
-
-Test by deleting a product
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+> Test by deleting a product
