@@ -6,6 +6,13 @@
 </a>
 </h2>
 
+<p align="center">
+[![GitHub issues](https://img.shields.io/github/issues/theraavan/mern-express-example-and-notes?style=plastic)](https://github.com/theraavan/mern-express-example-and-notes/issues)
+<img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" >
+[![GitHub stars](https://img.shields.io/github/stars/theraavan/mern-express-example-and-notes?style=plastic)](https://github.com/theraavan/mern-express-example-and-notes/stargazers)
+<img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">
+</p>
+
 
 
 	npm init --yes
