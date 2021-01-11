@@ -7,9 +7,8 @@
 </h2>
 
 <p align="center">
-[![GitHub issues](https://img.shields.io/github/issues/theraavan/mern-express-example-and-notes?style=plastic)](https://github.com/theraavan/mern-express-example-and-notes/issues)
+<a href="https://github.com/theraavan/mern-express-example-and-notes/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/theraavan/mern-express-example-and-notes"></a>
 <img src="https://badges.frapsoft.com/os/v1/open-source.svg?v=103" >
-[![GitHub stars](https://img.shields.io/github/stars/theraavan/mern-express-example-and-notes?style=plastic)](https://github.com/theraavan/mern-express-example-and-notes/stargazers)
 <img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat">
 </p>
 
@@ -876,3 +875,225 @@ router.delete('/:id', productController.deleteProduct);
 ```
 
 > Test by deleting a product
+
+
+### Post Api - User Signup
+-----------------------
+
+- Create a userSchema inside model=>userModel.js
+```javascript
+const mongoose = require('mongoose');
+
+const userSchema = new mongoose.Schema({
+    email: String,
+    password: String
+},{
+    timestamps: true,
+    toObject : {
+        transform: function(doc, ret, options){
+            ret.id = ret._id;
+            delete ret._id;
+            delete ret.__v;
+            delete ret.password; 
+            return ret;
+        }
+    }
+})
+
+module.exports = mongoose.model('User', userSchema)
+```
+
+- create a new service file called userService.js with empty signup method
+
+```javascript
+module.exports.signup = () => {
+    
+}
+```
+
+- update new constant for signup message 
+```javascript
+module.exports = {
+    defaultServerResponse:{
+        status : 400,
+        message : '',
+        body : {}
+    },
+    productMessage : {
+        PRODUCT_CREATED : 'Product created successfully',
+        PRODUCT_FETCHED : 'Product fetched successfully',
+        PRODUCT_UPDATED : 'Product updated successfully',
+        PRODUCT_DELETED : 'Product deleted successfully',
+        PRODUCT_NOT_FOUND : 'Product not found with given id'
+    },
+    userMessage:{
+        SIGNUP_SUCCESS : 'Signup success',
+        DUPLICATE_EMAIL : 'User already exists with given email'
+    },
+    requestValidationMessage : {
+        BAD_REQUEST : 'Invalid fields'
+    },
+    databaseMessage: {
+        INVALID_ID: 'Given id is invalid please check id.'
+    }
+}
+```
+
+- Create userController.js inside controller with following code
+
+```javascript
+const constants = require('../constants');
+const userService = require('../service/userService');
+
+
+module.exports.signup = async (req, res) =>{
+    //let response = {};
+    let response = {...constants.defaultServerResponse};
+    try{
+        const responseFromService = await userService.signup(req.body);
+        response.status = 200;
+        response.message = constants.userMessage.SIGNUP_SUCCESS;
+        response.body = responseFromService;
+    }catch(err){
+        console.error('User Controller: signup() =>', err);
+        response.message = err.message;
+    }
+    return res.status(response.status).send(response);
+}
+```
+
+- Since controller is ready include the controller inside user route.
+	
+- Create a new route file inside routes called userRoutes.js with following code
+
+```javascript
+const express = require('express');
+const router = express.Router();
+const userController = require('../controller/userController');
+
+router.post('signup', userController.signup);
+
+module.exports = router;
+```
+
+- Add Joi validation for user schema by creating a file userSchema.js inside apiSchema folder
+
+```javascript
+const Joi = require('joi');
+
+module.exports.signup = Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required()
+});
+```
+
+- Update route by adding schema validation middleware
+
+```javascript
+const express = require('express');
+const router = express.Router();
+const userController = require('../controller/userController');
+const joiSchemaValidation = require('../middleware/joiSchemaValidation');
+const userSchema = require('../apiScheme/userSchema');
+
+router.post('/signup', joiSchemaValidation.validateBody(userSchema.signup), userController.signup);
+
+module.exports = router;
+```
+
+- Before adding user inside db we will encrypt the password for that we will use bcrypt library
+
+`npm install bcrypt`
+
+- Update signup service with following code 
+```javascript
+const User = require('../database/models/userModel')
+const constants = require('../constants')
+const bcrypt = require('bcrypt');
+const { formatMongoData } = require('../helper/dbHelper');
+
+module.exports.signup = async ({ email, password }) => {
+    try{
+        const user = await User.findOne({ email }); // using es6 shortcut we can skip value if key value name is same
+        // If user already exist with given email throw error else signup
+        if(user){
+            throw new Error(constants.userMessage.DUPLICATE_EMAIL);
+        }
+        // before storing it to db encrypt pass using saltRound you can give any number recommended 8 to 15
+        password = await bcrypt.hash(password, 12);
+
+        // store data with updated password
+        // const newUser = new User({email:email, password:password});
+        const newUser = new User({email, password}); // using es6 shortcut we can skip value if key value name is same
+
+        let result = await newUser.save();
+
+        // return formatted data 
+        return formatMongoData(result);
+
+    }catch(err){
+        console.log('User Service: Signup: Something went wrong =>',err);
+        throw new Error(err);
+    }
+}
+```
+
+
+- Inside index.js create a new route for users and make use of userRoutes middleware
+
+```javascript
+app.use('/api/v1/users', require('./routes/userRoutes'));
+```
+
+> Test code for signup route by passing email and password 
+
+### User Login and JWT
+
+- Create schema for login, inside apiSchema folder open userSchema and add following code 
+
+```javascript
+module.exports.login = Joi.object().keys({
+    email: Joi.string().required(),
+    password: Joi.string().required()
+});
+```
+
+- Create controller for login with following code 
+
+```javascript
+module.exports.login = async (req, res) =>{
+    //let response = {};
+    let response = {...constants.defaultServerResponse};
+    try{
+        const responseFromService = await userService.login(req.body); // we will create this service next
+        response.status = 200;
+        response.message = constants.userMessage.LOGIN_SUCCESS; // add constant 
+        response.body = responseFromService;
+    }catch(err){
+        console.error('User Controller: login() =>', err);
+        response.message = err.message;
+    }
+    return res.status(response.status).send(response);
+}
+```
+
+> To generate JSON web token we will use jsonwebtoken library read more about it [here](https://www.npmjs.com/package/jsonwebtoken)
+
+`npm i jsonwebtoken`
+
+
+- Create Service for login
+
+```javascript
+
+
+
+
+
+
+
+
+
+
+
+

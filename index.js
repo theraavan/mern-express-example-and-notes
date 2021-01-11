@@ -14,7 +14,7 @@ app.use(express.json());
 
 
 app.use('/api/v1/products', require('./routes/productRoutes'));
-
+app.use('/api/v1/users', require('./routes/userRoutes'));
 
 app.listen(PORT, ()=>{
     console.log(`Server listening on port ${PORT}`);
