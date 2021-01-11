@@ -3,6 +3,7 @@ const router = express.Router();
 const productController = require('../controller/productController');
 const joiSchemaValidation = require('../middleware/joiSchemaValidation');
 const productSchema = require('../apiScheme/productScheme');
+const tokenValidation = require('../middleware/tokenValidation');
 
 
 //router.post('/', productController.createProduct);
@@ -12,7 +13,7 @@ router.post(
     productController.createProduct
 );
 
-router.get('/', joiSchemaValidation.validateQueryParams(productSchema.getAllProductSchema), productController.getAllProducts);
+router.get('/', tokenValidation.validateToken, joiSchemaValidation.validateQueryParams(productSchema.getAllProductSchema), productController.getAllProducts);
 
 router.get('/:id', productController.getProductById);
 

@@ -1085,8 +1085,73 @@ module.exports.login = async (req, res) =>{
 - Create Service for login
 
 ```javascript
+module.exports.login = async ({ email, password }) => {
+    try{
+        const user = await User.findOne({ email }); // using es6 shortcut we can skip value if key value name is same
+        // If user not exist with given email throw error
+        if(!user){
+            throw new Error(constants.userMessage.USER_NOT_FOUND); // Define this
+        }
+
+        // Validate password using bcrypt method using 
+        const isValid = await bcrypt.compare(password, user.password);
+
+        // if password is not valid throw error
+        if(!isValid){
+            throw new Error(constants.userMessage.INVALID_PASSWORD); // Define this
+        }
+
+        const token = jwt.sign({id:user._id }, process.env.SECRET_KEY || 'my-secret-key', {expiresIn: '1d'});
+        
+
+        return {token: token};// can be written as {token}
+
+    }catch(err){
+        console.log('User Service: login: Something went wrong =>',err);
+        throw new Error(err);
+    }
+}
+```
+
+### Protect product routes with jwt
+
+- Create a middleware called tokenValidation.js with following code 
+
+```javascript
+const constant = require('../constants');
+const jwt = require('jsonwebtoken');
 
 
+module.exports.validateToken = (req, res, next) => {
+    let response = {...constant.defaultServerResponse};
+    try{
+        if(!req.headers.authorization){
+            throw new Error(constant.requestValidationMessage.TOKEN_MISSING);
+        }
+        console.log(req.headers.authorization.split('Bearer')[1].trim())
+        const token = req.headers.authorization.split('Bearer')[1].trim();
+        const decoded = jwt.verify(token, process.env.SECRET_KEY || 'my-secret-key');
+        return next();
+    }catch(error){
+        console.error('Error', error);
+        response.message = error.message;
+        response.status = 401;
+    }
+    return res.status(response.status).send(response);
+}
+```
+
+- Add middle ware on getAllProduct route
+
+```javascript
+router.get('/', tokenValidation.validateToken, joiSchemaValidation.validateQueryParams(productSchema.getAllProductSchema), productController.getAllProducts);
+```
+
+> Test app by login route and get token, use that token on inside header to get all froduct
+
+> To get all product add header with Authorization as key and value as Bearer token
+
+> Add validation middleware on all route which you want to protect
 
 
 
